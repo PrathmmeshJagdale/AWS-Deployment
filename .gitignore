@@ -16,3 +16,6 @@ terraform.tfstate.backup
 *.pem
 *.key
 
+# Logs
+*.log
+nohup.out
