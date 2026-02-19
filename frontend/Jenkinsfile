@@ -1,0 +1,39 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "frontend"
+    }
+
+    stages {
+
+
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/PrathmmeshJagdale/AWS-Deployment.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                cd frontend
+                npm install
+                '''
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                sh '''
+                cd frontend
+                pm2 delete $APP_NAME || true
+                pm2 start src/server.js --name $APP_NAME
+                pm2 save
+                pm2 list
+                '''
+            }
+        }
+    }
+}
+

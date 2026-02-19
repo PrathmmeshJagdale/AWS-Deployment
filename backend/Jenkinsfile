@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "flask-backend"
+        VENV_DIR = "venv"
+    }
+
+    stages {
+
+        stage('Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/PrathmmeshJagdale/AWS-Deployment.git'
+            }
+        }
+
+        stage('Setup Virtual Environment') {
+            steps {
+                sh '''
+                cd backend
+                python3 -m venv $VENV_DIR
+                $VENV_DIR/bin/pip install -r requirement.txt
+                '''
+            }
+        }
+
+        stage('Deploy Flask App') {
+            steps {
+                sh '''
+                cd backend
+                pm2 delete $APP_NAME || true
+                pm2 start $VENV_DIR/bin/python --name $APP_NAME -- run.py
+                pm2 save
+                pm2 list
+                '''
+            }
+        }
+    }
+}
+
